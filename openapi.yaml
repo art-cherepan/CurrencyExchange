@@ -1,0 +1,167 @@
+openapi: "3.0.2"
+info:
+  title: "CurrensyExchange API"
+  description: "Service for storing and issuing exchange rates"
+  version: "1.0"
+servers:
+- url: http://localhost/
+paths:
+  /exchange-rate:
+    get:
+      tags:
+      - Current exchange rate
+      summary: "Exchange rates against the EUR"
+      description: "Access to current exchange rates for a specific day against the EUR"
+      operationId: ExchangeRate
+      parameters:
+        - $ref: '#/components/parameters/from'
+        - $ref: '#/components/parameters/to'
+        - $ref: '#/components/parameters/date'
+        
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200/exchange-rate'
+      
+        404:
+          description: Not found response
+          content:
+            text/plain:
+              schema:
+                title: Exchange rate not found
+                type: string
+                example: Not found
+                
+  /exchange-rates:
+    get:
+      tags:
+      - Exchange rates
+      summary: "Exchange rates for period against the EUR"
+      description: "Access to set of exchange rates for period against the EUR"
+      operationId: ExchangeRates
+      parameters:
+        - $ref: '#/components/parameters/from'
+        - $ref: '#/components/parameters/to'
+        - $ref: '#/components/parameters/datePeriodFrom'
+        - $ref: '#/components/parameters/datePeriodTo'
+        
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200/exchange-rates'
+      
+        404:
+          description: Not found response
+          content:
+            text/plain:
+              schema:
+                title: Exchange rates not found
+                type: string
+                example: Not found
+        
+tags:
+  - name: Current exchange rate
+  description: "Get current exchange rate details"
+  
+components:
+  parameters:
+    from:
+      name: from
+      in: query
+      description: "The base code of the currency from which the exchange rate is calculated"
+      schema:
+        type: string
+      required: true
+        
+    to:
+      name: to
+      in: query
+      description: "Currency code for which the exchange rate is calculate"
+      schema
+        type: string
+      required: true
+    
+    date:
+      name: date
+      in: query
+      description: "Date (if no date is specified, today's date is used)"
+      schema
+        type: string
+      required: false
+      
+    datePeriodFrom:
+      name: date
+      in: query
+      description: "Date from which you want to get exchange rates"
+      schema
+        type: string
+      required: true
+      
+    datePeriodTo:
+      name: date
+      in: query
+      description: "Date by which you need to get exchange rates"
+      schema
+        type: string
+      required: true
+  
+  schemas:
+    200:
+      exchange-rate:
+        title: Successful response
+        type: object
+        properties:
+          from:
+            type: number
+            description: "Exchange rate of the currency with which the calculation is made in relation to the EUR"
+            example: 1.144945
+          to:
+            type: number
+            description: "The exchange rate for which the calculation is made in relation to the EUR"
+            example: 1.144945
+          date:
+            type: string
+            description: "Current course date"
+            example: "2022-02-05"
+          rate:
+            type: number
+            description: "Calculated rate"
+            example: 75.7451
+      exchange-rates:
+        title: Successful response
+        type: object
+        properties:
+          from:
+            type: number
+            description: "Exchange rate of the currency with which the calculation is made in relation to the EUR"
+            example: 1.144945
+          to:
+            type: number
+            description: "The exchange rate for which the calculation is made in relation to the EUR"
+            example: 1.144945
+          rate:
+            type: array
+            items:
+              $ref: '#/components/schemas/Rate'
+              description: "Array of the exchange-rate objects"
+    Rate:
+      title: Rate
+      type: object
+      properties:
+        rate:
+          type: number
+          description: "Received exchange rate"
+          example: 76.7246
+        date:
+          type: string
+          description: "Current date from period"
+          example: "2022-02-01"
+              
+
+  

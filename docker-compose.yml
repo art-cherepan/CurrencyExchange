@@ -1,0 +1,45 @@
+version: '3.0'
+
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+    volumes:
+      - ./:/symfony
+    container_name: nginx-container
+    restart: always
+    ports:
+      - "8083:80"
+
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+    volumes:
+      - ./:/symfony
+    container_name: php-fpm-container
+    depends_on:
+      - mysql
+
+  php-cli:
+    build:
+      context: ./docker/php-cli
+    volumes:
+      - ./:/symfony
+    command: sleep 10000
+    container_name: php-cli-container
+
+  database:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql:/var/lib/mysql
+    container_name: mysql-container
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_DATABASE=currency_exchange"
+      - "MYSQL_USER=root"
+      - "MYSQL_PASSWORD=root"
+
+volumes:
+  mysql:
